@@ -38,13 +38,22 @@ export const SchoolFilter = ({ onFilter }: SchoolFilterProps) => {
     fetchGrupos();
   }, []);
 
-  const handleFilter = () => {
-    onFilter(
-      nome.trim(),
-      regiaoId !== "" ? regiaoId : null,
-      grupoId !== "" ? grupoId : null
-    );
-  };
+const handleFilter = async () => {
+  const query = new URLSearchParams();
+
+  if (nome.trim()) query.append("nome", nome.trim());
+  if (regiaoId !== "") query.append("regiaoId", String(regiaoId));
+  if (grupoId !== "") query.append("grupoId", String(grupoId));
+
+  const url = `${import.meta.env.VITE_API_URL}/api/escolas?${query.toString()}`;
+  const res = await fetch(url);
+  const data = await res.json();
+
+  onFilter(nome.trim(), regiaoId !== "" ? regiaoId : null, grupoId !== "" ? grupoId : null);
+
+  console.log("Escolas filtradas:", data);
+};
+
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 mb-6 transition-all">
